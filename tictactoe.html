@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tic Tac Toe</title>
+<style>
+  body { font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 40px; background: #f4f4f8; }
+  #board { display: grid; grid-template-columns: repeat(3, 100px); gap: 6px; }
+  .cell { width: 100px; height: 100px; font-size: 48px; font-weight: bold; border: none; border-radius: 8px; background: #fff; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,.15); }
+  .cell:hover:not(:disabled) { background: #eef; }
+  .cell.win { background: #b6f0b6; }
+  .X { color: #d33; } .O { color: #36c; }
+  #status { margin: 16px; font-size: 20px; }
+  button#reset { padding: 8px 18px; font-size: 16px; border-radius: 6px; border: none; background: #333; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Tic Tac Toe</h1>
+<div id="status"></div>
+<div id="board"></div>
+<p><button id="reset">New game</button></p>
+<script>
+const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+let board, turn, over;
+const boardEl = document.getElementById('board');
+const statusEl = document.getElementById('status');
+
+function reset() {
+  board = Array(9).fill(''); turn = 'X'; over = false;
+  boardEl.innerHTML = '';
+  board.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.className = 'cell';
+    b.onclick = () => play(i);
+    boardEl.appendChild(b);
+  });
+  statusEl.textContent = "X's turn";
+}
+
+function play(i) {
+  if (over || board[i]) return;
+  board[i] = turn;
+  const cell = boardEl.children[i];
+  cell.textContent = turn; cell.classList.add(turn); cell.disabled = true;
+  const line = LINES.find(l => l.every(k => board[k] === turn));
+  if (line) {
+    line.forEach(k => boardEl.children[k].classList.add('win'));
+    statusEl.textContent = turn + ' wins!'; over = true;
+  } else if (board.every(Boolean)) {
+    statusEl.textContent = "It's a draw!"; over = true;
+  } else {
+    turn = turn === 'X' ? 'O' : 'X';
+    statusEl.textContent = turn + "'s turn";
+  }
+}
+
+document.getElementById('reset').onclick = reset;
+reset();
+</script>
+</body>
+</html>
